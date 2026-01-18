@@ -5,10 +5,14 @@
 const PEXELS_API_KEY = 'RH8RBXiR6FvHEKqhKz6t6BQqGQHLJc4eXgNQq5oPd9FVVSJlTuzhAWvV';
 
 async function loadPexelsImages() {
-    const imageContainers = document.querySelectorAll('[data-pexels]');
+    // Get all service cards with Pexels query attributes
+    const serviceCards = document.querySelectorAll('.service-card[data-pexels-query]');
     
-    for (const container of imageContainers) {
-        const query = container.getAttribute('data-pexels');
+    for (const card of serviceCards) {
+        const query = card.getAttribute('data-pexels-query');
+        const imageDiv = card.querySelector('.service-image');
+        
+        if (!imageDiv) continue;
         
         try {
             const response = await fetch(`https://api.pexels.com/v1/search?query=${encodeURIComponent(query)}&per_page=1&orientation=landscape`, {
@@ -21,13 +25,20 @@ async function loadPexelsImages() {
                 const data = await response.json();
                 if (data.photos && data.photos.length > 0) {
                     const photo = data.photos[0];
-                    container.style.backgroundImage = `url(${photo.src.medium})`;
-                    container.setAttribute('title', `Photo by ${photo.photographer}`);
+                    imageDiv.style.backgroundImage = `url(${photo.src.large})`;
+                    imageDiv.style.opacity = '0';
+                    imageDiv.style.transition = 'opacity 0.6s ease-in-out';
+                    setTimeout(() => {
+                        imageDiv.style.opacity = '1';
+                    }, 100);
                 }
             }
         } catch (error) {
             console.warn('Failed to load Pexels image:', error);
         }
+        
+        // Add small delay between requests to respect rate limits
+        await new Promise(resolve => setTimeout(resolve, 250));
     }
 }
 
