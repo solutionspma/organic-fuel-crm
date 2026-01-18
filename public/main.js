@@ -8,6 +8,16 @@ async function loadPexelsImages() {
     // Get all service cards with Pexels query attributes
     const serviceCards = document.querySelectorAll('.service-card[data-pexels-query]');
     
+    // Fallback images if Pexels fails
+    const fallbacks = {
+        'social media marketing': 'https://images.pexels.com/photos/267350/pexels-photo-267350.jpeg?auto=compress&cs=tinysrgb&w=800',
+        'content creation': 'https://images.pexels.com/photos/590022/pexels-photo-590022.jpeg?auto=compress&cs=tinysrgb&w=800',
+        'brand strategy': 'https://images.pexels.com/photos/3184465/pexels-photo-3184465.jpeg?auto=compress&cs=tinysrgb&w=800',
+        'email marketing': 'https://images.pexels.com/photos/4065876/pexels-photo-4065876.jpeg?auto=compress&cs=tinysrgb&w=800',
+        'seo optimization': 'https://images.pexels.com/photos/270637/pexels-photo-270637.jpeg?auto=compress&cs=tinysrgb&w=800',
+        'data analytics': 'https://images.pexels.com/photos/590020/pexels-photo-590020.jpeg?auto=compress&cs=tinysrgb&w=800'
+    };
+    
     for (const card of serviceCards) {
         const query = card.getAttribute('data-pexels-query');
         const imageDiv = card.querySelector('.service-image');
@@ -26,19 +36,32 @@ async function loadPexelsImages() {
                 if (data.photos && data.photos.length > 0) {
                     const photo = data.photos[0];
                     imageDiv.style.backgroundImage = `url(${photo.src.large})`;
-                    imageDiv.style.opacity = '0';
-                    imageDiv.style.transition = 'opacity 0.6s ease-in-out';
-                    setTimeout(() => {
-                        imageDiv.style.opacity = '1';
-                    }, 100);
+                } else {
+                    // Use fallback if no results
+                    imageDiv.style.backgroundImage = `url(${fallbacks[query]})`;
                 }
+            } else {
+                // Use fallback on API error
+                imageDiv.style.backgroundImage = `url(${fallbacks[query]})`;
             }
+            
+            // Fade in the image
+            imageDiv.style.opacity = '0';
+            imageDiv.style.transition = 'opacity 0.6s ease-in-out';
+            setTimeout(() => {
+                imageDiv.style.opacity = '1';
+            }, 100);
         } catch (error) {
-            console.warn('Failed to load Pexels image:', error);
+            console.warn('Failed to load Pexels image, using fallback:', error);
+            // Use fallback on error
+            if (fallbacks[query]) {
+                imageDiv.style.backgroundImage = `url(${fallbacks[query]})`;
+                imageDiv.style.opacity = '1';
+            }
         }
         
         // Add small delay between requests to respect rate limits
-        await new Promise(resolve => setTimeout(resolve, 250));
+        await new Promise(resolve => setTimeout(resolve, 200));
     }
 }
 
