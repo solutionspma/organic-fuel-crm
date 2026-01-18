@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Organic Fuel - Admin Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1e40af;
+            --secondary: #10b981;
+            --dark: #1f2937;
+            --light: #f3f4f6;
+            --white: #ffffff;
+            --shadow: rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: var(--light);
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        header {
+            background: var(--white);
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px var(--shadow);
+            margin-bottom: 2rem;
+        }
+
+        h1 {
+            color: var(--dark);
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .subtitle {
+            color: #6b7280;
+            font-size: 1rem;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: var(--white);
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px var(--shadow);
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: #6b7280;
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .section {
+            background: var(--white);
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px var(--shadow);
+            margin-bottom: 2rem;
+        }
+
+        h2 {
+            color: var(--dark);
+            margin-bottom: 1.5rem;
+            font-size: 1.5rem;
+        }
+
+        .config-grid {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .config-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            background: var(--light);
+            border-radius: 8px;
+        }
+
+        .config-label {
+            font-weight: 500;
+            color: var(--dark);
+        }
+
+        .config-value {
+            color: #6b7280;
+            font-family: monospace;
+            font-size: 0.875rem;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .status-configured {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .status-pending {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .status-error {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .table-container {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            text-align: left;
+            padding: 1rem;
+            background: var(--light);
+            font-weight: 600;
+            color: var(--dark);
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        td {
+            padding: 1rem;
+            border-bottom: 1px solid var(--light);
+            color: #6b7280;
+        }
+
+        tr:hover {
+            background: #f9fafb;
+        }
+
+        code {
+            background: var(--light);
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 0.875rem;
+        }
+
+        .btn {
+            background: var(--primary);
+            color: var(--white);
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .btn:hover {
+            background: var(--primary-dark);
+        }
+
+        .alert {
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+
+        .alert-info {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .alert-warning {
+            background: #fef3c7;
+            color: #92400e;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🌱 Organic Fuel - Admin Dashboard</h1>
+            <p class="subtitle">Backend Configuration & System Status</p>
+        </header>
+
+        <div class="stats">
+            <div class="stat-card">
+                <div class="stat-number" id="totalLeads">-</div>
+                <div class="stat-label">Total Leads</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="totalMessages">-</div>
+                <div class="stat-label">Total Messages</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="smsSent">-</div>
+                <div class="stat-label">SMS Sent</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="emailsSent">-</div>
+                <div class="stat-label">Emails Sent</div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>🔧 Backend Configuration</h2>
+            <div class="alert alert-info">
+                <strong>Note:</strong> This dashboard requires environment variables to be configured and Netlify Functions to be running.
+            </div>
+            <div class="config-grid">
+                <div class="config-item">
+                    <span class="config-label">Supabase Database</span>
+                    <span class="status status-pending">Pending Configuration</span>
+                </div>
+                <div class="config-item">
+                    <span class="config-label">Telnyx SMS</span>
+                    <span class="status status-pending">Pending Configuration</span>
+                </div>
+                <div class="config-item">
+                    <span class="config-label">Email SMTP</span>
+                    <span class="status status-pending">Pending Configuration</span>
+                </div>
+                <div class="config-item">
+                    <span class="config-label">Netlify Functions</span>
+                    <span class="status status-pending">Not Running</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>📡 API Endpoints</h2>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Endpoint</th>
+                            <th>Method</th>
+                            <th>Purpose</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>/.netlify/functions/chat-submit</code></td>
+                            <td>POST</td>
+                            <td>Handle chat submissions, create leads</td>
+                            <td><span class="status status-pending">Requires Netlify</span></td>
+                        </tr>
+                        <tr>
+                            <td><code>/.netlify/functions/send-sms</code></td>
+                            <td>POST</td>
+                            <td>Send SMS notifications via Telnyx</td>
+                            <td><span class="status status-pending">Requires Netlify</span></td>
+                        </tr>
+                        <tr>
+                            <td><code>/.netlify/functions/send-email</code></td>
+                            <td>POST</td>
+                            <td>Send email notifications</td>
+                            <td><span class="status status-pending">Requires Netlify</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>🚀 Quick Setup Guide</h2>
+            <div class="alert alert-warning">
+                <strong>To see the backend in action:</strong>
+            </div>
+            <ol style="line-height: 2; margin-left: 2rem; color: #4b5563;">
+                <li>Create <code>.env</code> file from <code>.env.example</code></li>
+                <li>Configure Supabase credentials (URL + Service Role Key)</li>
+                <li>Configure Telnyx credentials (API Key + Phone Number)</li>
+                <li>Run Supabase schema: <code>supabase/schema.sql</code></li>
+                <li>Deploy to Netlify: <code>npx netlify deploy --prod</code></li>
+                <li>Or test locally (if workspace npm resolved): <code>npx netlify dev</code></li>
+            </ol>
+            <br>
+            <p style="color: #6b7280;">See <code>QUICKSTART.md</code> for detailed instructions.</p>
+        </div>
+
+        <div class="section">
+            <h2>📊 Database Schema</h2>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Table</th>
+                            <th>Purpose</th>
+                            <th>Key Fields</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>leads</code></td>
+                            <td>Contact records with status tracking</td>
+                            <td>name, phone, email, source, outbound_sms_count</td>
+                        </tr>
+                        <tr>
+                            <td><code>messages</code></td>
+                            <td>Complete message history</td>
+                            <td>lead_id, direction, channel, body</td>
+                        </tr>
+                        <tr>
+                            <td><code>notifications</code></td>
+                            <td>Notification delivery tracking</td>
+                            <td>lead_id, type, recipients, status</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>🔐 Environment Variables</h2>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Variable</th>
+                            <th>Purpose</th>
+                            <th>Example</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>SUPABASE_URL</code></td>
+                            <td>Supabase project URL</td>
+                            <td>https://xxx.supabase.co</td>
+                        </tr>
+                        <tr>
+                            <td><code>SUPABASE_SERVICE_ROLE_KEY</code></td>
+                            <td>Service role key (bypasses RLS)</td>
+                            <td>eyJhbG...</td>
+                        </tr>
+                        <tr>
+                            <td><code>TELNYX_API_KEY</code></td>
+                            <td>Telnyx API authentication</td>
+                            <td>KEY...</td>
+                        </tr>
+                        <tr>
+                            <td><code>TELNYX_FROM_NUMBER</code></td>
+                            <td>Your Telnyx phone number</td>
+                            <td>+18663371932</td>
+                        </tr>
+                        <tr>
+                            <td><code>NOTIFY_SMS_1</code></td>
+                            <td>First SMS notification recipient</td>
+                            <td>+12252485772</td>
+                        </tr>
+                        <tr>
+                            <td><code>NOTIFY_SMS_2</code></td>
+                            <td>Second SMS notification recipient</td>
+                            <td>+12254188858</td>
+                        </tr>
+                        <tr>
+                            <td><code>PEXELS_API_KEY</code></td>
+                            <td>Pexels API for dynamic images</td>
+                            <td>Configured ✓</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

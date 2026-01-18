@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Organic Fuel - Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1e40af;
+            --secondary: #10b981;
+            --dark: #1f2937;
+            --light: #f3f4f6;
+            --white: #ffffff;
+            --shadow: rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: var(--light);
+        }
+
+        .header {
+            background: var(--white);
+            border-bottom: 1px solid #e5e7eb;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 1px 3px var(--shadow);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .header-left h1 {
+            font-size: 1.5rem;
+            color: var(--dark);
+        }
+
+        .user-badge {
+            display: inline-block;
+            padding: 0.375rem 0.75rem;
+            border-radius: 999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .badge-super-admin {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .badge-admin {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .user-info {
+            text-align: right;
+        }
+
+        .user-name {
+            font-weight: 600;
+            color: var(--dark);
+            font-size: 0.875rem;
+        }
+
+        .user-role {
+            font-size: 0.75rem;
+            color: #6b7280;
+        }
+
+        .logout-btn {
+            background: var(--primary);
+            color: var(--white);
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: background 0.3s;
+        }
+
+        .logout-btn:hover {
+            background: var(--primary-dark);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: var(--white);
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px var(--shadow);
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: #6b7280;
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .section {
+            background: var(--white);
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px var(--shadow);
+            margin-bottom: 2rem;
+        }
+
+        .section.hidden {
+            display: none;
+        }
+
+        h2 {
+            color: var(--dark);
+            margin-bottom: 1.5rem;
+            font-size: 1.5rem;
+        }
+
+        .table-container {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            text-align: left;
+            padding: 1rem;
+            background: var(--light);
+            font-weight: 600;
+            color: var(--dark);
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        td {
+            padding: 1rem;
+            border-bottom: 1px solid var(--light);
+            color: #6b7280;
+        }
+
+        tr:hover {
+            background: #f9fafb;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .status-new {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .status-contacted {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .status-converted {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: #6b7280;
+        }
+
+        .empty-state-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        code {
+            background: var(--light);
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 0.875rem;
+        }
+
+        .alert {
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+        }
+
+        .alert-info {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .alert-warning {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .config-grid {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .config-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            background: var(--light);
+            border-radius: 8px;
+        }
+
+        .config-label {
+            font-weight: 500;
+            color: var(--dark);
+        }
+
+        .config-value {
+            color: #6b7280;
+            font-family: monospace;
+            font-size: 0.875rem;
+        }
+
+        .status-configured {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .status-pending {
+            background: #fef3c7;
+            color: #92400e;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-left">
+            <h1>🌱 Organic Fuel</h1>
+            <span id="roleBadge" class="user-badge"></span>
+        </div>
+        <div class="header-right">
+            <div class="user-info">
+                <div class="user-name" id="userName"></div>
+                <div class="user-role" id="userRole"></div>
+            </div>
+            <button class="logout-btn" onclick="logout()">Logout</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Stats Section - Visible to all -->
+        <div class="stats">
+            <div class="stat-card">
+                <div class="stat-number" id="totalLeads">0</div>
+                <div class="stat-label">Total Leads</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="totalMessages">0</div>
+                <div class="stat-label">Total Messages</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="todayLeads">0</div>
+                <div class="stat-label">Today's Leads</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="conversionRate">0%</div>
+                <div class="stat-label">Conversion Rate</div>
+            </div>
+        </div>
+
+        <!-- Leads Section - Visible to all -->
+        <div class="section" id="leadsSection">
+            <h2>📋 Recent Leads</h2>
+            <div class="alert alert-info">
+                <strong>Note:</strong> Connect to Supabase to see live lead data. Currently showing sample data.
+            </div>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Contact</th>
+                            <th>Source</th>
+                            <th>Status</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    <tbody id="leadsTable">
+                        <tr>
+                            <td colspan="5" class="empty-state">
+                                <div class="empty-state-icon">📭</div>
+                                <div>No leads yet. Deploy to Netlify and connect Supabase to see real data.</div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Messages Section - Visible to all -->
+        <div class="section" id="messagesSection">
+            <h2>💬 Recent Messages</h2>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Lead</th>
+                            <th>Channel</th>
+                            <th>Direction</th>
+                            <th>Message</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    <tbody id="messagesTable">
+                        <tr>
+                            <td colspan="5" class="empty-state">
+                                <div class="empty-state-icon">💬</div>
+                                <div>No messages yet. Connect to see conversation history.</div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Backend Config Section - SUPER ADMIN ONLY -->
+        <div class="section hidden" id="configSection">
+            <h2>🔧 Backend Configuration</h2>
+            <div class="alert alert-warning">
+                <strong>Super Admin Access Only:</strong> These settings control the entire system.
+            </div>
+            <div class="config-grid">
+                <div class="config-item">
+                    <span class="config-label">Supabase Database</span>
+                    <span class="status status-pending">Pending Configuration</span>
+                </div>
+                <div class="config-item">
+                    <span class="config-label">Telnyx SMS</span>
+                    <span class="status status-pending">Pending Configuration</span>
+                </div>
+                <div class="config-item">
+                    <span class="config-label">Email SMTP</span>
+                    <span class="status status-pending">Pending Configuration</span>
+                </div>
+                <div class="config-item">
+                    <span class="config-label">Netlify Functions</span>
+                    <span class="status status-pending">Not Running</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- API Endpoints - SUPER ADMIN ONLY -->
+        <div class="section hidden" id="apiSection">
+            <h2>📡 API Endpoints</h2>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Endpoint</th>
+                            <th>Method</th>
+                            <th>Purpose</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>/.netlify/functions/chat-submit</code></td>
+                            <td>POST</td>
+                            <td>Handle chat submissions, create leads</td>
+                        </tr>
+                        <tr>
+                            <td><code>/.netlify/functions/send-sms</code></td>
+                            <td>POST</td>
+                            <td>Send SMS notifications via Telnyx</td>
+                        </tr>
+                        <tr>
+                            <td><code>/.netlify/functions/send-email</code></td>
+                            <td>POST</td>
+                            <td>Send email notifications</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Environment Variables - SUPER ADMIN ONLY -->
+        <div class="section hidden" id="envSection">
+            <h2>🔐 Environment Variables</h2>
+            <div class="alert alert-warning">
+                <strong>Confidential:</strong> Never share these credentials.
+            </div>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Variable</th>
+                            <th>Purpose</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>SUPABASE_URL</code></td>
+                            <td>Database connection</td>
+                            <td><span class="status status-pending">Not Set</span></td>
+                        </tr>
+                        <tr>
+                            <td><code>SUPABASE_SERVICE_ROLE_KEY</code></td>
+                            <td>Database admin access</td>
+                            <td><span class="status status-pending">Not Set</span></td>
+                        </tr>
+                        <tr>
+                            <td><code>TELNYX_API_KEY</code></td>
+                            <td>SMS service</td>
+                            <td><span class="status status-pending">Not Set</span></td>
+                        </tr>
+                        <tr>
+                            <td><code>PEXELS_API_KEY</code></td>
+                            <td>Image service</td>
+                            <td><span class="status status-configured">Configured</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Setup Guide - SUPER ADMIN ONLY -->
+        <div class="section hidden" id="setupSection">
+            <h2>🚀 Deployment Guide</h2>
+            <div class="alert alert-info">
+                <strong>Quick Deploy Steps:</strong>
+            </div>
+            <ol style="line-height: 2; margin-left: 2rem; color: #4b5563;">
+                <li>Configure <code>.env</code> file with credentials</li>
+                <li>Run Supabase schema: <code>supabase/schema.sql</code></li>
+                <li>Deploy to Netlify: <code>npx netlify deploy --prod</code></li>
+                <li>Add environment variables in Netlify dashboard</li>
+                <li>Test chat widget on live site</li>
+            </ol>
+            <br>
+            <p style="color: #6b7280;">See <code>QUICKSTART.md</code> for detailed instructions.</p>
+        </div>
+
+        <!-- Database Schema - SUPER ADMIN ONLY -->
+        <div class="section hidden" id="schemaSection">
+            <h2>📊 Database Schema</h2>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Table</th>
+                            <th>Purpose</th>
+                            <th>Key Fields</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>leads</code></td>
+                            <td>Contact records with status tracking</td>
+                            <td>name, phone, email, source, outbound_sms_count</td>
+                        </tr>
+                        <tr>
+                            <td><code>messages</code></td>
+                            <td>Complete message history</td>
+                            <td>lead_id, direction, channel, body</td>
+                        </tr>
+                        <tr>
+                            <td><code>notifications</code></td>
+                            <td>Notification delivery tracking</td>
+                            <td>lead_id, type, recipients, status</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script src="auth.js"></script>
+    <script>
+        // Initialize dashboard based on user role
+        document.addEventListener('DOMContentLoaded', function() {
+            const user = getCurrentUser();
+            if (!user) return;
+
+            // Set user info in header
+            document.getElementById('userName').textContent = user.name;
+            document.getElementById('userRole').textContent = user.role === 'super_admin' ? 'Super Administrator' : 'Administrator';
+            
+            const roleBadge = document.getElementById('roleBadge');
+            roleBadge.textContent = user.role === 'super_admin' ? 'Super Admin' : 'Admin';
+            roleBadge.className = `user-badge badge-${user.role.replace('_', '-')}`;
+
+            // Show/hide sections based on permissions
+            if (canSee('config')) {
+                document.getElementById('configSection').classList.remove('hidden');
+            }
+            if (canSee('api')) {
+                document.getElementById('apiSection').classList.remove('hidden');
+            }
+            if (canSee('env')) {
+                document.getElementById('envSection').classList.remove('hidden');
+            }
+            if (canSee('setup')) {
+                document.getElementById('setupSection').classList.remove('hidden');
+            }
+            if (canSee('schema')) {
+                document.getElementById('schemaSection').classList.remove('hidden');
+            }
+
+            // TODO: Load real data from Supabase when backend is connected
+            // For now, showing empty state
+        });
+    </script>
+</body>
+</html>

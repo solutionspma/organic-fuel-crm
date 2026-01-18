@@ -1,0 +1,19 @@
+{
+  "name": "organic-fuel-crm",
+  "version": "1.0.0",
+  "description": "Native CRM + Outreach Engine",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "netlify dev",
+    "build": "echo 'No build step required'",
+    "deploy": "netlify deploy --prod"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.90.1",
+    "axios": "^1.13.2"
+  },
+  "devDependencies": {
+    "netlify-cli": "^17.10.1"
+  }
+}
